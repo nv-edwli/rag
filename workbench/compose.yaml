@@ -38,7 +38,7 @@ services:
       NVIDIA_API_KEY: ${NVIDIA_API_KEY:?"NVIDIA_API_KEY is required"}
 
       ##===Embedding Model specific configurations===
-      # url on which embedding model is hosted. If "", Nvidia hosted API is used
+      # url on which embedding model is hosted. If Nvidia hosted API is used
       APP_EMBEDDINGS_SERVERURL: ${APP_EMBEDDINGS_SERVERURL-"nemoretriever-embedding-ms:8000"}
       APP_EMBEDDINGS_MODELNAME: ${APP_EMBEDDINGS_MODELNAME:-nvidia/llama-3.2-nv-embedqa-1b-v2}
       APP_EMBEDDINGS_DIMENSIONS: ${APP_EMBEDDINGS_DIMENSIONS:-2048}
@@ -76,13 +76,13 @@ services:
     expose:
       - "8082"
     shm_size: 5gb
-    profiles: ["", "ingest"]
+    profiles: ["ingest"]
 
   redis:
     image: "redis/redis-stack"
     ports:
       - "6379:6379"
-    profiles: ["", "ingest"]
+    profiles: ["ingest"]
 
   nv-ingest-ms-runtime:
     image: nvcr.io/nvidia/nemo-microservices/nv-ingest:25.3.0
@@ -160,7 +160,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
-    profiles: ["", "ingest"]
+    profiles: ["ingest"]
 
   # Main orchestrator server which stiches together all calls to different services to fulfill the user request
   rag-server:
@@ -198,21 +198,21 @@ services:
 
       ##===LLM Model specific configurations===
       APP_LLM_MODELNAME: ${APP_LLM_MODELNAME:-"meta/llama-3.1-70b-instruct"}
-      # url on which llm model is hosted. If "", Nvidia hosted API is used
+      # url on which llm model is hosted. If Nvidia hosted API is used
       APP_LLM_SERVERURL: ${APP_LLM_SERVERURL-"nim-llm:8000"}
 
       ##===Query Rewriter Model specific configurations===
       APP_QUERYREWRITER_MODELNAME: ${APP_QUERYREWRITER_MODELNAME:-"meta/llama-3.1-8b-instruct"}
-      # url on which query rewriter model is hosted. If "", Nvidia hosted API is used
+      # url on which query rewriter model is hosted. If Nvidia hosted API is used
       APP_QUERYREWRITER_SERVERURL: ${APP_QUERYREWRITER_SERVERURL-"nim-llm-llama-8b-ms:8000"}
 
       ##===Embedding Model specific configurations===
-      # url on which embedding model is hosted. If "", Nvidia hosted API is used
+      # url on which embedding model is hosted. If Nvidia hosted API is used
       APP_EMBEDDINGS_SERVERURL: ${APP_EMBEDDINGS_SERVERURL-"nemoretriever-embedding-ms:8000"}
       APP_EMBEDDINGS_MODELNAME: ${APP_EMBEDDINGS_MODELNAME:-nvidia/llama-3.2-nv-embedqa-1b-v2}
 
       ##===Reranking Model specific configurations===
-      # url on which ranking model is hosted. If "", Nvidia hosted API is used
+      # url on which ranking model is hosted. If Nvidia hosted API is used
       APP_RANKING_SERVERURL: ${APP_RANKING_SERVERURL-"nemoretriever-ranking-ms:8000"}
       APP_RANKING_MODELNAME: ${APP_RANKING_MODELNAME:-"nvidia/llama-3.2-nv-rerankqa-1b-v2"}
       ENABLE_RERANKER: ${ENABLE_RERANKER:-True}
@@ -268,7 +268,7 @@ services:
       RESPONSE_GROUNDEDNESS_THRESHOLD: ${RESPONSE_GROUNDEDNESS_THRESHOLD:-1}
       # reflection llm
       REFLECTION_LLM: ${REFLECTION_LLM:-"mistralai/mixtral-8x22b-instruct-v0.1"}
-      # reflection llm server url. If "", Nvidia hosted API is used
+      # reflection llm server url. If Nvidia hosted API is used
       REFLECTION_LLM_SERVERURL: ${REFLECTION_LLM_SERVERURL-"nim-llm-mixtral-8x22b:8000"}
 
     ports:
@@ -276,7 +276,7 @@ services:
     expose:
       - "8081"
     shm_size: 5gb
-    profiles: ["", "rag"]
+    profiles: ["rag"]
 
   # Sample UI container which interacts with APIs exposed by rag-server container
   rag-playground:
@@ -303,7 +303,7 @@ services:
       - "3000"
     depends_on:
       - rag-server
-    profiles: ["", "rag"]
+    profiles: ["rag"]
 
   # Milvus can be made GPU accelerated by uncommenting the lines as specified below
   milvus:
@@ -339,7 +339,7 @@ services:
               capabilities: ["gpu"]
               # count: ${INFERENCE_GPU_COUNT:-all}
               device_ids: ['${VECTORSTORE_GPU_DEVICE_ID:-0}']
-    profiles: ["", "vectordb"]
+    profiles: ["vectordb"]
 
   etcd:
     container_name: milvus-etcd
@@ -357,7 +357,7 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-    profiles: ["", "vectordb"]
+    profiles: ["vectordb"]
 
   minio:
     container_name: milvus-minio
@@ -376,7 +376,7 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-    profiles: ["", "vectordb"]
+    profiles: ["vectordb"]
 
 networks:
   default:
