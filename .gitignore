@@ -78,3 +78,4 @@ cover/
 # Workbench Project Layout
 workbench/data/*
 workbench/volumes/*
+volumes/*
