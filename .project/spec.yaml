@@ -91,7 +91,7 @@ environment:
         package_manager_environment:
             name: ""
             target: ""
-    compose_file_path: ""
+    compose_file_path: "/project/workbench/compose.yaml"
 execution:
     apps: []
     resources:
