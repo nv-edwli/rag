@@ -6,7 +6,7 @@ services:
     image: nvcr.io/nvidia/blueprint/ingestor-server:${TAG:-2.0.0}
     build:
       # Set context to repo's root directory
-      context: ../../
+      context: ../
       dockerfile: src/ingestor_server/Dockerfile
     # start the server on port 8082 with 4 workers for improved latency on concurrent requests.
     command: --port 8082 --host 0.0.0.0 --workers 1
@@ -168,7 +168,7 @@ services:
     image: nvcr.io/nvidia/blueprint/rag-server:${TAG:-2.0.0}
     build:
       # Set context to repo's root directory
-      context: ../../
+      context: ../
       dockerfile: src/Dockerfile
     # start the server on port 8081 with 8 workers for improved latency on concurrent requests.
     command: --port 8081 --host 0.0.0.0 --workers 8
@@ -284,7 +284,7 @@ services:
     image: nvcr.io/nvidia/blueprint/rag-playground:${TAG:-2.0.0}
     build:
       # Set context to repo's root directory
-      context: ../../frontend
+      context: ../frontend
       dockerfile: ./Dockerfile
       args:
         # Model name for LLM

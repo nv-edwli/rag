@@ -76,3 +76,5 @@ coverage.xml
 cover/
 
 # Workbench Project Layout
+workbench/data/*
+workbench/volumes/*
