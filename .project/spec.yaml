@@ -91,6 +91,7 @@ environment:
         package_manager_environment:
             name: ""
             target: ""
+    compose_file_path: ""
 execution:
     apps: []
     resources:
