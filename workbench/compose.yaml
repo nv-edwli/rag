@@ -1,5 +1,193 @@
 services:
 
+  nim-llm:
+    container_name: nim-llm-ms
+    image: nvcr.io/nim/meta/llama-3.1-70b-instruct-pb24h2:1.3.4
+    volumes:
+    - ${MODEL_DIRECTORY:-./}:/opt/nim/.cache
+    user: "${USERID}"
+    ports:
+    - "8999:8000"
+    expose:
+    - "8000"
+    environment:
+      NGC_API_KEY: ${NVIDIA_API_KEY}
+    shm_size: 20gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              #count: ${INFERENCE_GPU_COUNT:-all}
+              device_ids: ['${LLM_MS_GPU_ID:-2,3}']
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import requests; requests.get('http://localhost:8000/v1/health/ready')"]
+      interval: 10s
+      timeout: 20s
+      retries: 100
+    profiles: ["local"]
+
+  nemoretriever-embedding-ms:
+    container_name: nemoretriever-embedding-ms
+    image: nvcr.io/nim/nvidia/llama-3.2-nv-embedqa-1b-v2:1.5.0
+    volumes:
+    - ${MODEL_DIRECTORY:-./}:/opt/nim/.cache
+    ports:
+    - "9080:8000"
+    expose:
+    - "8000"
+    environment:
+      NGC_API_KEY: ${NVIDIA_API_KEY}
+    user: "${USERID}"
+    shm_size: 16GB
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # count: ${INFERENCE_GPU_COUNT:-all}
+              device_ids: ['${EMBEDDING_MS_GPU_ID:-1}']
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health/ready"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10m
+    profiles: ["local"]
+
+  nemoretriever-ranking-ms:
+    container_name: nemoretriever-ranking-ms
+    image: nvcr.io/nim/nvidia/llama-3.2-nv-rerankqa-1b-v2:1.3
+    volumes:
+    - ${MODEL_DIRECTORY:-./}:/opt/nim/.cache
+    ports:
+    - "1976:8000"
+    expose:
+    - "8000"
+    environment:
+      NGC_API_KEY: ${NVIDIA_API_KEY}
+    user: "${USERID}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health/ready"]
+      interval: 10s
+      timeout: 20s
+      retries: 100
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # count: ${INFERENCE_GPU_COUNT:-all}
+              device_ids: ['${RANKING_MS_GPU_ID:-1}']
+              capabilities: [gpu]
+    profiles: ["local"]
+
+  page-elements:
+    image: ${YOLOX_IMAGE:-nvcr.io/nim/nvidia/nemoretriever-page-elements-v2}:${YOLOX_TAG:-1.2.0}
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    user: root
+    environment:
+      - NIM_HTTP_API_PORT=8000
+      - NIM_TRITON_LOG_VERBOSE=1
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - NGC_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - CUDA_VISIBLE_DEVICES=0
+      - NIM_TRITON_MODEL_BATCH_SIZE=${PAGE_ELEMENTS_BATCH_SIZE:-1}
+      # NIM OpenTelemetry Settings
+      - NIM_OTEL_SERVICE_NAME=page-elements
+      - NIM_OTEL_TRACES_EXPORTER=otlp
+      - NIM_OTEL_METRICS_EXPORTER=console
+      - NIM_OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - NIM_ENABLE_OTEL=true
+      # Triton OpenTelemetry Settings
+      - TRITON_OTEL_URL=http://otel-collector:4318/v1/traces
+      - TRITON_OTEL_RATE=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${YOLOX_MS_GPU_ID:-0}']
+              capabilities: [gpu]
+    runtime: nvidia
+    profiles: ["local"]
+
+  graphic-elements:
+    image: ${YOLOX_GRAPHIC_ELEMENTS_IMAGE:-nvcr.io/nim/nvidia/nemoretriever-graphic-elements-v1}:${YOLOX_GRAPHIC_ELEMENTS_TAG:-1.2.0}
+    ports:
+      - "8003:8000"
+      - "8004:8001"
+      - "8005:8002"
+    user: root
+    environment:
+      - NIM_HTTP_API_PORT=8000
+      - NIM_TRITON_LOG_VERBOSE=1
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - NGC_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - CUDA_VISIBLE_DEVICES=0
+      - NIM_TRITON_MODEL_BATCH_SIZE=${GRAPHIC_ELEMENTS_BATCH_SIZE:-1}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${YOLOX_GRAPHICS_MS_GPU_ID:-0}']
+              capabilities: [gpu]
+    runtime: nvidia
+    profiles: ["local"]
+
+  table-structure:
+    image: ${YOLOX_TABLE_STRUCTURE_IMAGE:-nvcr.io/nim/nvidia/nemoretriever-table-structure-v1}:${YOLOX_TABLE_STRUCTURE_TAG:-1.2.0}
+    ports:
+      - "8006:8000"
+      - "8007:8001"
+      - "8008:8002"
+    user: root
+    environment:
+      - NIM_HTTP_API_PORT=8000
+      - NIM_TRITON_LOG_VERBOSE=1
+      - NGC_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - CUDA_VISIBLE_DEVICES=0
+      - NIM_TRITON_MODEL_BATCH_SIZE=${TABLE_STRUCTURE_BATCH_SIZE:-1}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids:  ['${YOLOX_TABLE_MS_GPU_ID:-0}']
+              capabilities: [gpu]
+    runtime: nvidia
+    profiles: ["local"]
+
+  paddle:
+    image: ${PADDLE_IMAGE:-nvcr.io/nim/baidu/paddleocr}:${PADDLE_TAG:-1.2.0}
+    shm_size: 2gb
+    ports:
+      - "8009:8000"
+      - "8010:8001"
+      - "8011:8002"
+    user: root
+    environment:
+      - NIM_HTTP_API_PORT=8000
+      - NIM_TRITON_LOG_VERBOSE=1
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - NGC_API_KEY=${NVIDIA_API_KEY:-nvidiaapikey}
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids:  ['${PADDLE_MS_GPU_ID:-0}']
+              capabilities: [gpu]
+    runtime: nvidia
+    profiles: ["local"]
+
   # Main ingestor server which is responsible for ingestion
   ingestor-server:
     container_name: ingestor-server
