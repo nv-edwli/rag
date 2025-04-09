@@ -51,7 +51,7 @@ Ensure you have satisfied the prerequisites for this Blueprint ([details](../REA
 
 1. On the **File Browser**, locate the ``variables.env`` file.
 
-1. From the hamburger menu, select **Edit**. Comment out the overriding environment variables. 
+1. From the hamburger menu, select **Edit**. Comment out the overriding variables for Build endpoints. 
 
 1. Select ``ingest``, ``rag``, ``vectordb``, and ``local`` compose profiles from the dropdown under the **Compose** section.
 
