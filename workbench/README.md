@@ -25,7 +25,7 @@ Ensure you have satisfied the prerequisites for this Blueprint ([details](../REA
 
 1. Open NVIDIA AI Workbench. Select a **Location** to work in.
 
-1. **Clone** the project: https://github.com/nv-edwli/rag 
+1. **Clone** the project with URL: https://github.com/NVIDIA-AI-Blueprints/rag
 
 1. On the **Project Dashboard**, resolve the yellow unconfigured secrets warning by inputting your ``NVIDIA_API_KEY``.
 
@@ -45,7 +45,7 @@ Ensure you have satisfied the prerequisites for this Blueprint ([details](../REA
 
 1. Open NVIDIA AI Workbench. Select a **Location** to work in.
 
-1. **Clone** the project: https://github.com/nv-edwli/rag 
+1. **Clone** the project with URL: https://github.com/NVIDIA-AI-Blueprints/rag
 
 1. On the **Project Dashboard**, resolve the yellow unconfigured secrets warning by inputting your ``NVIDIA_API_KEY``.
 
