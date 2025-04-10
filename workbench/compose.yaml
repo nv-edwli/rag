@@ -19,7 +19,7 @@ services:
           devices:
             - driver: nvidia
               #count: ${INFERENCE_GPU_COUNT:-all}
-              device_ids: ['${LLM_MS_GPU_ID:-2,3}']
+              device_ids: ['${LLM_MS_GPU_ID1:-2}', '${LLM_MS_GPU_ID2:-3}']
               capabilities: [gpu]
     healthcheck:
       test: ["CMD", "python3", "-c", "import requests; requests.get('http://localhost:8000/v1/health/ready')"]
