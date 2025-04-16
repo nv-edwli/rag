@@ -79,3 +79,6 @@ cover/
 workbench/data/*
 workbench/volumes/*
 volumes/*
+workbench/nim_cache/huggingface/
+workbench/nim_cache/local_cache/
+workbench/nim_cache/ngc/
