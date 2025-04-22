@@ -7,28 +7,7 @@ meta:
     labels: []
     createdOn: "2024-12-06T19:19:11Z"
     defaultBranch: main
-layout:
-    - path: data/
-      type: code
-      storage: git
-    - path: deploy/
-      type: code
-      storage: git
-    - path: docs/
-      type: code
-      storage: git
-    - path: frontend/
-      type: code
-      storage: git
-    - path: notebooks/
-      type: code
-      storage: git
-    - path: src/
-      type: code
-      storage: git
-    - path: workbench/
-      type: code
-      storage: git
+layout: []
 environment:
     base:
         registry: nvcr.io
